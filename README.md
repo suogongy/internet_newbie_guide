@@ -1,0 +1,189 @@
+# 互联网新兵参考
+
+本项目是一本面向互联网行业新人的参考指南，基于十年互联网从业经验的分享与总结。生成的的内容，切记不要太生硬，文风尽量做到风趣幽默又有深度和专业性
+
+## 目录结构
+
+1. [互联网公司架构](./chapter1-company-structure/)
+   - [传统公司基本架构](./chapter1-company-structure/traditional-company-structure.md)
+   - [互联网的产品技术运营](./chapter1-company-structure/internet-product-tech-operation.md)
+   - [产品经理是干什么的](./chapter1-company-structure/product-manager-role.md)
+   - [技术研发是干什么的](./chapter1-company-structure/tech-development-role.md)
+   - [运营人员是干什么的](./chapter1-company-structure/operation-role.md)
+2. [程序员的基本专业素养](./chapter2-professional-qualities/)
+   - [软件工程基础](./chapter2-professional-qualities/software-engineering-basics.md)
+   - [数据结构与算法基础](./chapter2-professional-qualities/data-structure-algorithm-basics.md)
+   - [操作系统基础](./chapter2-professional-qualities/operating-system-basics.md)
+   - [计算机网络基础](./chapter2-professional-qualities/computer-network-basics.md)
+   - [软件测试基础](./chapter2-professional-qualities/software-testing-basics.md)
+3. [程序员的基本非专业素养](./chapter3-non-professional-qualities/)
+   - 严谨的思维
+   - 充分考虑各业务场景，理清系统边界
+   - 拒绝大概、应该、估计等表达
+   - 细心、细心、细心
+   - 善意的交流
+   - 不主动表达恶意
+   - 提供友好的接口
+   - 负责的态度
+   - 及时响应各种咨询
+   - 及时解决各种缺陷
+   - 及时完成研发任务
+   - 进取的追求
+   - 坚持学习
+   - 坚持代码可读性
+   - 坚持精益求精
+   - 健康的身体
+   - 身体是革命的本钱
+   - 996有时候真是福报
+4. [初级程序员的成长之路](./chapter4-growth-path/)
+   - 选择一家合适的公司
+   - 业务的学习
+   - 专业知识提升
+   - 早到迟退
+5. [公司应该是个什么地方](./chapter5-company-definition/)
+   - 个人公司共同成长
+   - 职场人生时间的落脚点
+   - 爱，相互爱
+6. [好公司的一些特征](./chapter6-good-company/)
+   - 牛逼的领导与能干的团队
+   - 核心产品的社会积极意义
+   - 快速发展成长至行业领头羊地位
+   - 关注员工福利与成长
+   - 关注用户利益与成长
+   - 关注社会责任
+7. [差公司的一些特征](./chapter7-bad-company/)
+   - 内斗不止
+   - 山头主义，派系林立
+   - 关系网强大
+   - 领导至上
+   - 马屁为王，ppt是王道
+   - 坑蒙拐骗
+   - 员工压榨
+   - 无限义务加班
+   - 低于市场竞争力的薪资
+   - 画大饼忽悠
+   - 效率底下
+   - 混乱不规范
+   - 缺乏责任制
+   - 不合理评价制
+   - 前景不明
+   - 没有战略规划
+8. [如何面对好公司](./chapter8-dealing-with-good-company/)
+   - 做好自己的专业任务
+   - 维护公司
+   - 宣传公司
+   - 关心公司发展
+   - 积极献策，思考未来
+9. [如何面对差公司](./chapter9-dealing-with-bad-company/)
+   - 努力改变
+   - 趁早滚蛋，脱离苦海
+10. [员工的基本素养](./chapter10-employee-qualities/)
+    - 专业技能提升与运用
+    - 注重效率
+    - 积极创新
+11. [优秀的员工](./chapter11-excellent-employee/)
+    - 高质高量完成本职工作
+    - 积极提高团队协作力和战斗力
+    - 积极并善于学习
+    - 帮助团队内伙伴
+    - 协助好团队外伙伴
+    - 有担当
+    - 支持并理解领导
+12. [不合格的员工](./chapter12-unqualified-employee/)
+    - 业务能力不达标
+    - 工作态度差
+    - 难以沟通合作
+    - 缺乏常识
+    - 过于自我
+    - 没有团队意识
+13. [如何面对优秀的员工](./chapter13-dealing-with-excellent-employee/)
+    - 认可
+    - 奖励与表达
+    - 升职与加薪
+14. [如何面对不合格的员工](./chapter14-dealing-with-unqualified-employee/)
+    - 积极沟通与引导变化
+    - 重点帮扶
+    - 不开人的领导不是好领导
+15. [领导的基本素养](./chapter15-leader-qualities/)
+    - 招聘
+    - 分工
+    - 人尽其用
+    - 监督
+    - 引导
+16. [优秀的领导](./chapter16-excellent-leader/)
+    - 能够识别优秀或高潜的候选人
+    - 能够激发团队成员的激情
+    - 能够帮助团队成员解惑
+17. [不合格的领导](./chapter17-unqualified-leader/)
+    - 奖罚不明
+    - 任人唯亲
+    - 不懂瞎指挥
+    - 以权压人
+18. [如何面对优秀的领导](./chapter18-dealing-with-excellent-leader/)
+    - 积极配合工作安排
+    - 主动汇报工作进展
+    - 及时反馈问题与建议
+    - 学习领导的优秀品质
+    - 珍惜成长机会
+19. [如何面对不合格的领导](./chapter19-dealing-with-unqualified-leader/)
+    - 保持职业素养
+    - 做好本职工作
+    - 适当提出建议
+    - 寻找更好的机会
+    - 保持心理健康
+20. [队友的基本素养](./chapter20-teammate-qualities/)
+    - 良好的沟通能力
+    - 团队协作意识
+    - 责任心与执行力
+    - 互帮互助精神
+    - 积极主动的态度
+21. [优秀的队友](./chapter21-excellent-teammate/)
+    - 技能全面且专业
+    - 乐于分享经验
+    - 主动承担责任
+    - 善于团队合作
+    - 积极解决问题
+22. [不合格的队友](./chapter22-unqualified-teammate/)
+    - 推诿扯皮
+    - 消极怠工
+    - 独断专行
+    - 不讲团队协作
+    - 经常制造矛盾
+23. [如何面对优秀的队友](./chapter23-dealing-with-excellent-teammate/)
+    - 真诚合作
+    - 互相学习
+    - 共同进步
+    - 珍惜缘分
+    - 建立良好关系
+24. [如何面对不合格的队友](./chapter24-dealing-with-unqualified-teammate/)
+    - 保持专业态度
+    - 以身作则
+    - 适度包容
+    - 及时沟通
+    - 必要时寻求帮助
+25. [一部非典型的堕落史](./chapter25-story-of-degradation/)
+    - 初入职场的雄心壮志
+    - 得过且过的工作态度
+    - 消极懈怠的恶性循环
+    - 职业生涯的停滞不前
+    - 最终的职场出局
+26. [一部非典型的奋斗史](./chapter26-story-of-struggle/)
+    - 平凡起点的不平凡
+    - 持续学习的力量
+    - 逆境中的成长
+    - 机遇与准备的邂逅
+    - 登顶之后再攀高
+
+## 如何使用本指南
+
+1. 每个章节都是独立的主题，你可以根据自己的需求选择性阅读
+2. 建议新人按顺序阅读，以便更好地理解互联网行业的整体生态
+3. 本指南中的建议都来自实际工作经验，但仍需结合具体情况灵活运用
+
+## 贡献
+
+如果你也想分享自己的经验和见解，欢迎提交 Pull Request。
+
+## 许可
+
+本项目采用 MIT 许可证。
