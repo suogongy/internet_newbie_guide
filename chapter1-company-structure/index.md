@@ -1,6 +1,8 @@
 # 互联网公司架构
 
-## [传统公司基本架构](./traditional-company-structure.md)
+## 传统公司基本架构
+
+详细内容请参考：[传统公司基本架构](./traditional-company-structure.md)
 
 传统公司的组织架构通常较为固定，主要包含以下部门：
 
@@ -12,7 +14,9 @@
 6. 生产/技术部
 7. 行政部
 
-## [互联网的产品技术运营](./internet-product-tech-operation.md)
+## 互联网的产品技术运营
+
+详细内容请参考：[互联网的产品技术运营](./internet-product-tech-operation.md)
 
 互联网公司的组织架构更加灵活，主要围绕产品、技术、运营三大核心：
 
@@ -34,7 +38,9 @@
    - 活动运营
    - 数据运营
 
-## [产品经理是干什么的](./product-manager-role.md)
+## 产品经理是干什么的
+
+详细内容请参考：[产品经理是干什么的](./product-manager-role.md)
 
 产品经理是产品的负责人，主要工作包括：
 
@@ -44,7 +50,9 @@
 4. 数据分析与优化
 5. 跨部门协调与沟通
 
-## [技术研发是干什么的](./tech-development-role.md)
+## 技术研发是干什么的
+
+详细内容请参考：[技术研发是干什么的](./tech-development-role.md)
 
 技术研发团队负责产品的技术实现，主要工作包括：
 
@@ -54,7 +62,9 @@
 4. 性能调优与维护
 5. 技术创新与研究
 
-## [运营人员是干什么的](./operation-role.md)
+## 运营人员是干什么的
+
+详细内容请参考：[运营人员是干什么的](./operation-role.md)
 
 运营人员负责产品的运营推广，主要工作包括：
 
@@ -76,7 +86,9 @@
 - 数据挖掘
 - 运营策略
 
-## [市场部门](./marketing-department-role.md)
+## 市场部门
+
+详细内容请参考：[市场部门](./marketing-department-role.md)
 
 ### 市场营销
 - 品牌推广
@@ -88,7 +100,9 @@
 - 渠道开发
 - 客户关系
 
-## [人力资源部门](./hr-department-role.md)
+## 人力资源部门
+
+详细内容请参考：[人力资源部门](./hr-department-role.md)
 
 ### 招聘
 - 人才需求

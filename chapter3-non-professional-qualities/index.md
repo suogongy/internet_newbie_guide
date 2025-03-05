@@ -2,7 +2,7 @@
 
 ## 思维方式
 
-[详细内容](./thinking-mode.md)
+详细内容请参考：[思维方式](./thinking-mode.md)
 
 ### 严谨思维
 - 培养逻辑性思维习惯
@@ -24,7 +24,7 @@
 
 ## 工作态度
 
-[详细内容](./work-attitude.md)
+详细内容请参考：[工作态度](./work-attitude.md)
 
 ### 责任意识
 - 主动承担任务
@@ -46,7 +46,7 @@
 
 ## 沟通艺术
 
-[详细内容](./communication-art.md)
+详细内容请参考：[沟通艺术](./communication-art.md)
 
 ### 善意交流
 - 保持友善态度
@@ -68,7 +68,7 @@
 
 ## 团队协作
 
-[详细内容](./team-collaboration.md)
+详细内容请参考：[团队协作](./team-collaboration.md)
 
 ### 协作精神
 - 主动帮助他人
@@ -90,7 +90,7 @@
 
 ## 持续成长
 
-[详细内容](./continuous-growth.md)
+详细内容请参考：[持续成长](./continuous-growth.md)
 
 ### 学习态度
 - 保持求知欲望
