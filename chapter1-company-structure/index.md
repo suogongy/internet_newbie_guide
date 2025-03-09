@@ -1,5 +1,7 @@
 # 互联网公司架构
 
+[返回首页](../README.md)
+
 ## 传统公司基本架构
 
 详细内容请参考：[传统公司基本架构](./traditional-company-structure.md)
