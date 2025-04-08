@@ -68,9 +68,9 @@
 - 保证易用性
 - 考虑兼容性
 
-## 团队协作
+## 人际团队协作
 
-详细内容请参考：[团队协作](./team-collaboration.md)
+详细内容请参考：[人际团队协作](./interpersonal-team-collaboration.md)
 
 ### 协作精神
 - 主动帮助他人
