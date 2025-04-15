@@ -82,16 +82,30 @@ class LinkedList {
         // 将新节点添加到末尾
         last.next = newNode;
     }
+
+    // 删除头节点并返回其值
+    public int removeFirst() {
+        if (head == null) {
+            throw new IllegalStateException("链表为空");
+        }
+        
+        int data = head.data;
+        head = head.next;
+        return data;
+    }
     
-    // 打印链表
-    public void printList() {
+    // 查找指定值是否存在于链表中
+    public boolean contains(int data) {
         Node current = head;
         while (current != null) {
-            System.out.print(current.data + " -> ");
+            if (current.data == data) {
+                return true;
+            }
             current = current.next;
         }
-        System.out.println("null");
+        return false;
     }
+
 }
 ```
 
@@ -150,6 +164,8 @@ class Stack {
     }
 }
 ```
+
+> 注意：实际开发中，通常使用Java标准库中的集合类，如`java.util.Stack`或更推荐的`java.util.ArrayDeque`（性能更好）来实现栈功能。
 
 ### 4. 队列
 - 像排队买票，先来先服务
@@ -222,6 +238,8 @@ class Queue {
     }
 }
 ```
+
+> 注意：在实际开发中，推荐使用Java标准库中的`java.util.Queue`接口的实现类，如`LinkedList`或`ArrayDeque`，后者性能更好。对于需要优先级的队列，可以使用`PriorityQueue`。
 
 ### 5. 树
 - 像家族谱或公司的组织架构，有层次关系
@@ -309,7 +327,7 @@ class BinarySearchTree {
 }
 ```
 
-二叉搜索树是程序员的好朋友，它将数据有序组织，让查找变得高效。不过它也怕"偏食"，如果数据已经有序，它就会变成一条线，退化成链表。这时候就需要平衡树来拯救世界了。
+二叉搜索树是程序员的好朋友，它将数据有序组织，让查找变得高效（理想情况下是O(log n)）。不过它也怕"偏食"，如果数据已经有序，它就会变成一条线，退化成链表（复杂度退化到O(n)）。这时候就需要平衡树来拯救世界了。
 
 ### 6. 图
 - 像城市地铁网络或社交网络关系
@@ -413,8 +431,8 @@ class Graph {
 
 ### 1. 排序算法
 - 冒泡排序：像气泡往上冒，简单但效率低下（O(n²)）
-- 快速排序：分而治之的典范，平均效率高（O(n log n)）
-- 归并排序：先分后合，稳定且效率高，但空间消耗大
+- 快速排序：分而治之的典范，平均效率高（O(n log n)），但最坏情况下可能退化到O(n²)
+- 归并排序：先分后合，稳定且效率恒定为O(n log n)，但空间消耗为O(n)
 
 冒泡排序就像是新手游泳，看起来笨拙但容易理解；而快速排序则像职业游泳选手，优雅且高效。
 
@@ -645,3 +663,367 @@ class SearchAlgorithms {
 > 记住：好的程序员不仅要会用数据结构和算法，更要知道在什么场景下用什么结构和算法最合适。正如一位老程序员曾说："知道何时不使用某种算法，比知道何时使用它更重要。"
 
 学习数据结构和算法就像练武功，一开始可能枯燥乏味，但当你有一天能够轻松应对复杂问题时，那种成就感是无与伦比的。不要急于求成，厚积薄发，终有一日你会感谢今天努力学习的自己。
+
+## 常见面试题
+
+以下是数据结构和算法面试中的经典问题，建议掌握：
+
+### 数组与字符串
+
+**1. 如何判断一个字符串中的字符是否全都不同？**
+- 答：可以使用HashSet记录已出现的字符，遍历字符串，如果字符已在集合中则返回false，否则将字符加入集合。时间复杂度O(n)，空间复杂度O(k)，其中k是可能的字符集大小。
+```java
+public boolean isUnique(String str) {
+    HashSet<Character> set = new HashSet<>();
+    for (char c : str.toCharArray()) {
+        if (set.contains(c)) return false;
+        set.add(c);
+    }
+    return true;
+}
+```
+
+**2. 给定一个整数数组，找出其中和为特定值的两个数。**
+- 答：使用HashSet记录遍历过的数字。对于每个元素a，检查target-a是否在集合中，是则找到，否则将a加入集合。时间复杂度O(n)，空间复杂度O(n)。
+```java
+public int[] twoSum(int[] nums, int target) {
+    Map<Integer, Integer> map = new HashMap<>();
+    for (int i = 0; i < nums.length; i++) {
+        int complement = target - nums[i];
+        if (map.containsKey(complement)) {
+            return new int[] { map.get(complement), i };
+        }
+        map.put(nums[i], i);
+    }
+    return new int[0];
+}
+```
+
+### 链表
+
+**1. 如何检测链表中是否有环？**
+- 答：使用快慢指针（Floyd's Cycle-Finding Algorithm）。慢指针每次移动一步，快指针每次移动两步，如果存在环，两指针终会相遇。时间复杂度O(n)，空间复杂度O(1)。
+```java
+public boolean hasCycle(ListNode head) {
+    if (head == null || head.next == null) return false;
+    ListNode slow = head;
+    ListNode fast = head.next;
+    while (slow != fast) {
+        if (fast == null || fast.next == null) return false;
+        slow = slow.next;
+        fast = fast.next.next;
+    }
+    return true;
+}
+```
+
+**2. 如何找出单链表中倒数第k个节点？**
+- 答：使用两个指针，让第一个指针先前进k步，然后两个指针一起前进，当第一个指针到达末尾时，第二个指针指向的就是倒数第k个节点。时间复杂度O(n)。
+```java
+public ListNode findKthToLast(ListNode head, int k) {
+    ListNode first = head;
+    ListNode second = head;
+    
+    // 先让第一个指针走k步
+    for (int i = 0; i < k; i++) {
+        if (first == null) return null; // 链表长度小于k
+        first = first.next;
+    }
+    
+    // 两个指针一起走，直到第一个指针到达末尾
+    while (first != null) {
+        first = first.next;
+        second = second.next;
+    }
+    
+    return second;
+}
+```
+
+### 栈与队列
+
+**1. 如何用两个栈实现队列？**
+- 答：使用两个栈，一个用于入队（push操作），一个用于出队（pop操作）。当需要出队且出队栈为空时，将入队栈的所有元素依次弹出并压入出队栈，实现顺序反转。
+```java
+class MyQueue {
+    private Stack<Integer> stackIn;
+    private Stack<Integer> stackOut;
+    
+    public MyQueue() {
+        stackIn = new Stack<>();
+        stackOut = new Stack<>();
+    }
+    
+    public void push(int x) {
+        stackIn.push(x);
+    }
+    
+    public int pop() {
+        if (stackOut.isEmpty()) {
+            while (!stackIn.isEmpty()) {
+                stackOut.push(stackIn.pop());
+            }
+        }
+        return stackOut.pop();
+    }
+    
+    public int peek() {
+        if (stackOut.isEmpty()) {
+            while (!stackIn.isEmpty()) {
+                stackOut.push(stackIn.pop());
+            }
+        }
+        return stackOut.peek();
+    }
+    
+    public boolean empty() {
+        return stackIn.isEmpty() && stackOut.isEmpty();
+    }
+}
+```
+
+**2. 设计一个栈，除了常规操作外，还支持获取栈中最小元素的操作，且时间复杂度为O(1)。**
+- 答：使用两个栈，一个正常存储数据，另一个存储当前最小值。每次push时，将当前最小值也压入最小值栈；pop时，两个栈同时pop。
+```java
+class MinStack {
+    private Stack<Integer> dataStack;
+    private Stack<Integer> minStack;
+    
+    public MinStack() {
+        dataStack = new Stack<>();
+        minStack = new Stack<>();
+    }
+    
+    public void push(int x) {
+        dataStack.push(x);
+        if (minStack.isEmpty() || x <= minStack.peek()) {
+            minStack.push(x);
+        }
+    }
+    
+    public void pop() {
+        if (!dataStack.isEmpty()) {
+            if (dataStack.pop().equals(minStack.peek())) {
+                minStack.pop();
+            }
+        }
+    }
+    
+    public int top() {
+        return dataStack.peek();
+    }
+    
+    public int getMin() {
+        return minStack.peek();
+    }
+}
+```
+
+### 树与图
+
+**1. 如何判断一棵二叉树是否是平衡的？**
+- 答：一棵平衡二叉树的定义是任意节点的左右子树高度差不超过1。可以自底向上递归计算高度，如果发现不平衡立即返回。
+```java
+public boolean isBalanced(TreeNode root) {
+    return height(root) != -1;
+}
+
+private int height(TreeNode node) {
+    if (node == null) return 0;
+    
+    int leftHeight = height(node.left);
+    if (leftHeight == -1) return -1;
+    
+    int rightHeight = height(node.right);
+    if (rightHeight == -1) return -1;
+    
+    if (Math.abs(leftHeight - rightHeight) > 1) return -1;
+    
+    return Math.max(leftHeight, rightHeight) + 1;
+}
+```
+
+**2. 如何找出二叉树中两个节点的最近公共祖先？**
+- 答：递归查找左右子树，如果两个节点分别在当前节点的左右子树中，或者当前节点就是其中一个节点且另一个节点在其子树中，则当前节点就是最近公共祖先。
+```java
+public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+    if (root == null || root == p || root == q) return root;
+    
+    TreeNode left = lowestCommonAncestor(root.left, p, q);
+    TreeNode right = lowestCommonAncestor(root.right, p, q);
+    
+    if (left != null && right != null) return root;
+    return left != null ? left : right;
+}
+```
+
+### 排序与搜索
+
+**1. 描述快速排序的过程，并分析其时间复杂度。**
+- 答：快速排序是一种分治算法。基本过程是：选择一个基准元素，将小于基准的元素放在左边，大于基准的放在右边，然后递归对左右两部分进行排序。平均时间复杂度是O(n log n)，但最坏情况（已排序的数组）时为O(n²)。空间复杂度为O(log n)，用于递归调用栈。
+
+**2. 如何在一个旋转排序数组中查找特定值？（旋转排序数组是将一个排序数组在某个未知位置旋转，如[0,1,2,4,5,6,7]变成[4,5,6,7,0,1,2]）**
+- 答：修改二分搜索算法。每次比较中点与目标值，同时判断哪一部分是有序的。如果左半部分有序且目标值在左半部分的范围内，则在左半部分搜索，否则在右半部分搜索。同理，如果右半部分有序且目标值在右半部分范围内，则在右半部分搜索，否则在左半部分搜索。
+```java
+public int search(int[] nums, int target) {
+    int left = 0, right = nums.length - 1;
+    
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (nums[mid] == target) return mid;
+        
+        // 左半部分有序
+        if (nums[left] <= nums[mid]) {
+            // 目标值在左半部分
+            if (nums[left] <= target && target < nums[mid]) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        } 
+        // 右半部分有序
+        else {
+            // 目标值在右半部分
+            if (nums[mid] < target && target <= nums[right]) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+    }
+    
+    return -1;
+}
+```
+
+### 动态规划
+
+**1. 如何使用动态规划解决爬楼梯问题？（每次可以爬1或2个台阶，问爬到第n个台阶有多少种方法）**
+- 答：设立状态数组dp，其中dp[i]表示爬到第i个台阶的方法数。有两种方式到达第i个台阶：从第i-1个台阶爬1步，或从第i-2个台阶爬2步。因此状态转移方程为dp[i] = dp[i-1] + dp[i-2]，初始条件dp[1]=1, dp[2]=2。
+```java
+public int climbStairs(int n) {
+    if (n <= 2) return n;
+    
+    int[] dp = new int[n + 1];
+    dp[1] = 1;
+    dp[2] = 2;
+    
+    for (int i = 3; i <= n; i++) {
+        dp[i] = dp[i-1] + dp[i-2];
+    }
+    
+    return dp[n];
+}
+```
+
+**2. 如何用动态规划找到最长递增子序列的长度？**
+- 答：设立状态数组dp，其中dp[i]表示以第i个元素结尾的最长递增子序列长度。对于每个元素，比较它与之前所有元素，如果当前元素大于前面某个元素，则可以将当前元素接在那个元素后面形成更长的递增子序列。
+```java
+public int lengthOfLIS(int[] nums) {
+    if (nums.length == 0) return 0;
+    
+    int[] dp = new int[nums.length];
+    Arrays.fill(dp, 1); // 每个元素本身就是长度为1的子序列
+    int maxLength = 1;
+    
+    for (int i = 1; i < nums.length; i++) {
+        for (int j = 0; j < i; j++) {
+            if (nums[i] > nums[j]) {
+                dp[i] = Math.max(dp[i], dp[j] + 1);
+            }
+        }
+        maxLength = Math.max(maxLength, dp[i]);
+    }
+    
+    return maxLength;
+}
+```
+
+### 系统设计与实现
+
+**1. 如何设计一个LRU缓存（最近最少使用缓存）？**
+- 答：结合哈希表和双向链表。哈希表提供O(1)的查找，双向链表维护元素顺序（最近使用的放在前面）。当缓存满时，删除链表尾部元素（最久未使用的）。每次访问元素时，将其移到链表头部。
+```java
+class LRUCache {
+    class Node {
+        int key;
+        int value;
+        Node prev;
+        Node next;
+    }
+    
+    private Map<Integer, Node> cache;
+    private int capacity;
+    private Node head, tail;
+    
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        cache = new HashMap<>();
+        
+        // 使用伪头部和伪尾部节点
+        head = new Node();
+        tail = new Node();
+        head.next = tail;
+        tail.prev = head;
+    }
+    
+    public int get(int key) {
+        Node node = cache.get(key);
+        if (node == null) return -1;
+        
+        // 将访问的节点移到头部
+        moveToHead(node);
+        return node.value;
+    }
+    
+    public void put(int key, int value) {
+        Node node = cache.get(key);
+        
+        if (node == null) {
+            // 如果key不存在，创建新节点
+            Node newNode = new Node();
+            newNode.key = key;
+            newNode.value = value;
+            
+            cache.put(key, newNode);
+            addToHead(newNode);
+            
+            // 如果超出容量，删除尾部节点
+            if (cache.size() > capacity) {
+                Node tail = removeTail();
+                cache.remove(tail.key);
+            }
+        } else {
+            // 如果key存在，更新值并移到头部
+            node.value = value;
+            moveToHead(node);
+        }
+    }
+    
+    private void addToHead(Node node) {
+        node.prev = head;
+        node.next = head.next;
+        head.next.prev = node;
+        head.next = node;
+    }
+    
+    private void removeNode(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+    
+    private void moveToHead(Node node) {
+        removeNode(node);
+        addToHead(node);
+    }
+    
+    private Node removeTail() {
+        Node res = tail.prev;
+        removeNode(res);
+        return res;
+    }
+}
+```
+
+这些面试题涵盖了常见的数据结构和算法概念，掌握它们将为你的技术面试打下坚实基础。记住，不仅要知道答案，更重要的是理解背后的思考过程和解决问题的方法。

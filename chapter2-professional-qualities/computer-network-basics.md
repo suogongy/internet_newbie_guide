@@ -161,6 +161,8 @@ IP地址分A、B、C、D、E五类，其中A、B、C是常用的：
 - B类：128.0.0.0 - 191.255.255.255，首两位为10，适合中型网络
 - C类：192.0.0.0 - 223.255.255.255，首三位为110，适合小型网络
 
+**注意**: 这是传统的IP地址分类方法。现代网络广泛使用无类别域间路由（CIDR），允许更灵活地分配IP地址和定义网络大小，例如 `192.168.1.0/24` 表示前24位是网络部分。
+
 子网掩码就像是邮政编码，帮助区分网络部分和主机部分：
 ```
 IP地址: 192.168.1.5    二进制：11000000.10101000.00000001.00000101
@@ -199,18 +201,18 @@ function queryLocalDNSServer(domain) {
     
     // 否则进行迭代查询
     let result = null;
+    let currentNameServer = getRootNameServers(); // 从根服务器开始
     
-    // 1. 首先查询根域名服务器
-    let nameServer = getRootNameServers();
-    
-    // 2. 迭代查询
-    while (nameServer && !result) {
-        let response = queryNameServer(nameServer, domain);
+    // 迭代查询过程：不断向下级权威服务器查询
+    while (currentNameServer && !result) {
+        let response = queryNameServer(currentNameServer, domain);
         
-        if (response.hasAnswer()) {
+        if (response.hasAnswer()) { // 权威服务器直接返回了IP地址
             result = response.getIP();
-        } else {
-            nameServer = response.getReferral();  // 获取下一级权威服务器
+        } else if (response.hasReferral()) { // 权威服务器返回了下一级应查询的服务器地址
+            currentNameServer = response.getReferral(); 
+        } else { // 查询失败或无记录
+            currentNameServer = null; 
         }
     }
     
@@ -297,24 +299,27 @@ if (!certificateAuthority.verify(certificate)) {
     throw new Error("证书不可信!");
 }
 
-// 4. 客户端生成对称密钥，并用服务器公钥加密
-let symmetricKey = generateRandomKey();
-let encryptedKey = certificate.publicKey.encrypt(symmetricKey);
-client.send(encryptedKey);
+// 4. 客户端生成一个随机的对称密钥（或其种子，称为预主密钥 pre-master secret），并用服务器证书中的公钥加密
+let preMasterSecret = generateRandomSecret();
+let encryptedSecret = certificate.publicKey.encrypt(preMasterSecret);
+client.send(encryptedSecret);
 
-// 5. 服务器用私钥解密得到对称密钥
-let decryptedKey = server.privateKey.decrypt(encryptedKey);
+// 5. 服务器用自己的私钥解密得到预主密钥
+let decryptedSecret = server.privateKey.decrypt(encryptedSecret);
 
-// 6. 双方使用对称密钥加密后续通信
+// 6. 双方根据协商好的算法，使用预主密钥和之前交换的随机数生成相同的会话密钥（对称密钥）
+let sessionKey = generateSessionKey(clientRandom, serverRandom, decryptedSecret);
+
+// 7. 后续通信使用这个会话密钥进行对称加密
 client.encrypt = server.encrypt = function(message) {
-    return encryptWithSymmetricKey(message, decryptedKey);
+    return encryptWithSymmetricKey(message, sessionKey);
 };
 
 client.decrypt = server.decrypt = function(ciphertext) {
-    return decryptWithSymmetricKey(ciphertext, decryptedKey);
+    return decryptWithSymmetricKey(ciphertext, sessionKey);
 };
 
-// 7. 安全通信建立完成
+// 8. 安全通信建立完成
 let secureMessage = client.encrypt("Hello, secure world!");
 client.send(secureMessage);
 ```
@@ -508,4 +513,150 @@ function safeLogin(username, password) {
    - 实现高效的数据同步
    - 减少电量消耗
 
-记住：在互联网时代，理解网络原理对于程序员来说就像鱼需要理解水一样重要。网络知识是连接各种技术的桥梁，掌握它会让你在技术森林中游刃有余，就像拥有了一张详细的地图。
+## 常见面试题
+
+**1. 简述TCP/IP（或OSI）模型各层及其主要功能。**
+
+*   **TCP/IP四层模型：**
+    *   **应用层：** 提供用户接口，处理特定应用程序的协议（如HTTP、FTP、DNS）。
+    *   **传输层：** 提供端到端的数据传输服务，管理连接（TCP）或无连接（UDP）通信，负责数据分段、流量控制、错误控制。
+    *   **网络层（互联网层）：** 处理数据包的路由和转发，定义IP地址，在不同网络间寻址（IP协议）。
+    *   **网络接口层（链路层）：** 处理物理网络接口的细节，如MAC地址寻址、帧的封装、物理传输（以太网、Wi-Fi）。
+*   **OSI七层模型：** 应用层、表示层、会话层、传输层、网络层、数据链路层、物理层。（面试时能说出TCP/IP四层并映射到OSI即可）
+
+**2. TCP三次握手和四次挥手的过程？为什么握手是三次，挥手是四次？**
+
+*   **三次握手（建立连接）：**
+    1.  客户端发送SYN包（同步序列编号）到服务器，请求建立连接。
+    2.  服务器收到SYN包，回复SYN+ACK包（确认号ack=客户端seq+1，同时自己也发送SYN）。
+    3.  客户端收到服务器的SYN+ACK包，发送ACK包（确认号ack=服务器seq+1），连接建立。
+*   **为什么三次：** 为了防止已失效的连接请求报文突然又传到服务器，引起错误。三次握手能确保双方都具有发送和接收数据的能力。
+*   **四次挥手（断开连接）：**
+    1.  主动方（如客户端）发送FIN包（完成），表示数据发送完毕。
+    2.  被动方（服务器）收到FIN，回复ACK，表示知道了。此时被动方可能还有数据要发送，连接处于半关闭状态。
+    3.  被动方数据发送完毕后，发送FIN包。
+    4.  主动方收到FIN，回复ACK，等待一段时间（2MSL）后关闭连接。被动方收到ACK后立即关闭。
+*   **为什么四次：** 因为TCP是全双工的，服务器收到客户端的FIN只表示客户端不再发送数据，但服务器可能还有数据要发。服务器需要先ACK确认收到，等自己数据发完后再发送FIN。
+
+**3. TCP和UDP的区别？分别适用于哪些场景？**
+
+*   **区别：**
+    *   **连接性：** TCP是面向连接的；UDP是无连接的。
+    *   **可靠性：** TCP提供可靠传输（确认、重传、排序）；UDP尽最大努力交付，不保证可靠。
+    *   **效率：** UDP开销小，速度快；TCP开销大，速度相对慢。
+    *   **流量控制/拥塞控制：** TCP有；UDP没有。
+    *   **头部大小：** TCP头部（至少20字节）比UDP头部（8字节）大。
+*   **场景：**
+    *   **TCP：** 需要可靠传输的应用，如文件传输（FTP）、邮件（SMTP）、网页浏览（HTTP/HTTPS）。
+    *   **UDP：** 对实时性要求高、允许少量丢包的应用，如视频/音频流（直播、VoIP）、DNS查询、游戏。
+
+**4. 解释一下DNS解析过程。**
+
+*   用户在浏览器输入域名 `www.example.com`。
+*   **1. 浏览器缓存：** 浏览器检查自身缓存。
+*   **2. 操作系统缓存：** 检查本地`hosts`文件和操作系统DNS缓存。
+*   **3. 本地DNS服务器（LDNS）：** 向配置的本地DNS服务器（通常由ISP提供）发送递归查询请求。
+*   **4. LDNS查询过程（迭代）：**
+    *   LDNS检查自身缓存。
+    *   若无缓存，LDNS向根DNS服务器查询。
+    *   根服务器返回顶级域（.com）DNS服务器地址。
+    *   LDNS向.com DNS服务器查询。
+    *   .com服务器返回`example.com`的权威DNS服务器地址。
+    *   LDNS向`example.com`的权威DNS服务器查询`www.example.com`的IP地址。
+    *   权威DNS服务器返回IP地址。
+*   **5. LDNS返回结果：** LDNS将IP地址返回给操作系统，并缓存结果。
+*   **6. 浏览器获取IP：** 操作系统将IP地址返回给浏览器，浏览器发起HTTP请求。
+
+**5. 从输入URL到页面加载完成，发生了什么？**
+
+这是一个宏观问题，考察综合知识，可以简化回答关键步骤：
+1.  **DNS解析：** 浏览器通过DNS查询将URL中的域名解析为IP地址。
+2.  **TCP连接：** 浏览器与服务器通过TCP三次握手建立连接。
+3.  **HTTP请求：** 浏览器向服务器发送HTTP请求报文（GET/POST等）。
+4.  **服务器处理：** 服务器处理请求，可能涉及后端逻辑、数据库查询等。
+5.  **HTTP响应：** 服务器将HTTP响应报文（包含状态码、响应头、HTML内容等）发送给浏览器。
+6.  **浏览器渲染：**
+    *   浏览器解析HTML，构建DOM树。
+    *   解析CSS，构建CSSOM树。
+    *   结合DOM和CSSOM，构建渲染树（Render Tree）。
+    *   布局（Layout/Reflow）：计算每个节点的位置和大小。
+    *   绘制（Paint）：将节点绘制到屏幕上。
+    *   遇到JS会阻塞解析，执行JS脚本。JS可能会修改DOM/CSSOM，导致重排或重绘。
+    *   加载图片、脚本、样式表等外部资源，重复上述过程。
+7.  **TCP断开：** 请求完成后，可能通过TCP四次挥手断开连接（HTTP/1.1 Keep-Alive或HTTP/2多路复用会保持连接）。
+
+**6. HTTP常见的状态码有哪些？分别代表什么意思？**
+
+*   **2xx (成功):**
+    *   `200 OK`: 请求成功。
+*   **3xx (重定向):**
+    *   `301 Moved Permanently`: 永久重定向，资源已永久移动到新URL。
+    *   `302 Found`: 临时重定向。
+    *   `304 Not Modified`: 资源未修改，可使用缓存版本。
+*   **4xx (客户端错误):**
+    *   `400 Bad Request`: 请求语法错误。
+    *   `401 Unauthorized`: 未授权，需要身份验证。
+    *   `403 Forbidden`: 服务器拒绝执行请求。
+    *   `404 Not Found`: 请求的资源不存在。
+*   **5xx (服务器错误):**
+    *   `500 Internal Server Error`: 服务器内部错误。
+    *   `502 Bad Gateway`: 网关或代理服务器从上游服务器收到无效响应。
+    *   `503 Service Unavailable`: 服务器暂时无法处理请求（过载或维护）。
+
+**7. HTTPS是如何保证安全的？简述SSL/TLS握手过程。**
+
+*   **保证安全机制：**
+    *   **数据加密：** 使用对称加密算法加密传输内容，防止窃听。
+    *   **身份认证：** 使用基于证书的非对称加密算法验证服务器身份，防止中间人攻击。
+    *   **数据完整性：** 使用消息认证码（MAC）确保数据在传输过程中未被篡改。
+*   **简述SSL/TLS握手过程（简化版）：**
+    1.  **客户端Hello：** 客户端发送支持的加密套件、TLS版本、随机数 `ClientRandom`。
+    2.  **服务器Hello：** 服务器选择一个加密套件、TLS版本，发送随机数 `ServerRandom` 和服务器的数字证书。
+    3.  **客户端验证与密钥交换：**
+        *   客户端验证服务器证书的有效性（信任链、有效期、域名匹配等）。
+        *   生成一个预主密钥 `PreMasterSecret`。
+        *   用服务器证书中的公钥加密 `PreMasterSecret`，发送给服务器。
+        *   （可选）客户端发送证书（如果服务器要求客户端认证）。
+        *   客户端使用 `ClientRandom`, `ServerRandom`, `PreMasterSecret` 生成会话密钥（对称密钥）。
+        *   发送 `ChangeCipherSpec` 消息，表示后续将使用加密通信。
+        *   发送 `Finished` 消息（用会话密钥加密的握手摘要）。
+    4.  **服务器密钥交换与完成：**
+        *   服务器用私钥解密得到 `PreMasterSecret`。
+        *   服务器使用 `ClientRandom`, `ServerRandom`, `PreMasterSecret` 生成与客户端相同的会话密钥。
+        *   发送 `ChangeCipherSpec` 消息。
+        *   发送 `Finished` 消息（用会话密钥加密的握手摘要）。
+    5.  **安全通信：** 握手完成，双方使用协商好的会话密钥进行加密通信。
+
+**8. IP地址和MAC地址的区别？**
+
+*   **IP地址（网络层）：** 逻辑地址，用于在互联网中唯一标识一台主机或网络接口，并进行路由。它会随着设备所连接网络的变化而变化。类似收件地址。
+*   **MAC地址（数据链路层）：** 物理地址，烧录在网卡（NIC）上的全球唯一标识符，用于在局域网（LAN）内部标识设备。通常是固定的。类似身份证号。
+*   数据包在互联网传输时，目标IP地址不变，但每经过一个路由器，目标MAC地址会变为下一跳路由器的MAC地址。
+
+**9. 什么是CDN？它的作用是什么？**
+
+*   **CDN (Content Delivery Network)：** 内容分发网络。
+*   **作用：** 通过在全球各地部署边缘服务器，将源站的内容（如网页、图片、视频）缓存到离用户最近的服务器上。用户请求时，会从最近的边缘服务器获取内容，从而：
+    *   **加速访问：** 减少传输延迟，提高加载速度。
+    *   **减轻源站压力：** 大部分请求由边缘服务器处理。
+    *   **提高可用性：** 分散流量，单个节点故障不影响全局。
+
+**10. 什么是XSS攻击？如何防御？**
+
+*   **XSS (Cross-Site Scripting)：** 跨站脚本攻击。攻击者将恶意脚本注入到网页中，当其他用户访问该网页时，恶意脚本会在用户的浏览器中执行，从而窃取用户信息（如Cookie）、劫持会话、执行恶意操作等。
+*   **防御：**
+    *   **输入验证：** 对用户输入进行严格过滤和验证。
+    *   **输出编码/转义：** 在将用户输入的内容输出到HTML页面时，对特殊字符（如 `<`, `>`, `"`, `'`, `&`）进行HTML实体编码。
+    *   **设置HttpOnly Cookie：** 防止脚本通过 `document.cookie` 读取敏感Cookie。
+    *   **内容安全策略 (CSP)：** 定义浏览器可以加载哪些来源的资源，限制脚本执行。
+
+**11. 什么是SQL注入？如何防御？**
+
+*   **SQL注入：** 攻击者在用户输入（如表单字段、URL参数）中插入恶意的SQL代码片段，如果应用程序直接将这些输入拼接到SQL查询语句中执行，就可能导致数据库信息泄露、数据被篡改、甚至服务器被控制。
+*   **防御：**
+    *   **参数化查询（预编译语句）：** 最有效的防御方法。将用户输入作为参数传递给SQL执行，而不是直接拼接到查询语句中，数据库驱动会处理特殊字符，使其不被解释为SQL代码。
+    *   **输入验证和过滤：** 对用户输入进行类型、格式、长度检查，过滤危险字符。
+    *   **最小权限原则：** 数据库连接账户只授予必需的最小权限。
+    *   **ORM框架：** 很多ORM框架内置了对SQL注入的防护。
+   
+> 记住：在互联网时代，理解网络原理对于程序员来说就像鱼需要理解水一样重要。网络知识是连接各种技术的桥梁，掌握它会让你在技术森林中游刃有余，就像拥有了一张详细的地图。
